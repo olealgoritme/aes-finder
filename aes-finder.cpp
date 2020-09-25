@@ -18,7 +18,7 @@ static uint32_t _rotr(uint32_t x, int n)
 #else
 static uint32_t _rotr(uint32_t x, int n)
 {
-    return (x >> n) | (x << (32 - n));
+    return (x >> n) | (x << (31));
 }
 #endif
 
@@ -131,8 +131,9 @@ static uint32_t setup_mix(uint32_t temp)
 
 static uint32_t setup_mix2(uint32_t temp)
 {
-    return rotr32(TE[Td[byte(temp, 3)]], 0)
-         ^ rotr32(TE[Td[byte(temp, 2)]], 8)
+    return
+         rotr32(TE[Td[byte(temp, 3)]], 0)
+         ^rotr32(TE[Td[byte(temp, 2)]], 8)
          ^ rotr32(TE[Td[byte(temp, 1)]], 16)
          ^ rotr32(TE[Td[byte(temp, 0)]], 24);
 }
@@ -224,7 +225,7 @@ static bool aes192_detect_enc(const uint32_t* ctx, uint8_t* key)
     {
         tmp[k] = load<reversed>(ctx[k]);
     }
- 
+
     int i = 0;
     for (;;)
     {
@@ -252,7 +253,7 @@ static bool aes192_detect_enc(const uint32_t* ctx, uint8_t* key)
 
         tmp[11] = tmp[5] ^ tmp[10];
         if (tmp[11] != load<reversed>(ctx[5])) return false;
-        
+
         for (int k = 0; k < 6; k++)
         {
             tmp[k] = tmp[6 + k];
@@ -271,7 +272,7 @@ template <bool reversed>
 static bool aes256_detect_enc(const uint32_t* ctx, uint8_t* key)
 {
     const uint32_t* ptr = ctx;
- 
+
     uint32_t tmp[16];
     for (int k = 0; k < 8; k++)
     {
